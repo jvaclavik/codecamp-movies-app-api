@@ -1,4 +1,4 @@
-app.factory('MoviesService', function ($rootScope, $http, $state, $ionicLoading, APP_CONFIG, GlobalService) {
+app.factory('MoviesService', function ($http, APP_CONFIG) {
     return new (function () {
         var service = this;
         service.data = {};
@@ -20,55 +20,40 @@ app.factory('MoviesService', function ($rootScope, $http, $state, $ionicLoading,
 
         service.getMovieById = function (id) {
             var selectedMovie = {};
-            if (service.data.movies) {
-                angular.forEach(service.data.movies, function (movie) {
-                    if (movie.id == id) selectedMovie = movie;
-                })
-                return selectedMovie;
-            }
+            angular.forEach(service.data.movies, function (movie) {
+                if (movie.id == id) selectedMovie = movie;
+            });
+            return selectedMovie;
         };
 
 
-        service.getWatchedMoviesFromStorage = function(){
-            var watchedMovies;
-            try{
-                watchedMovies = JSON.parse(GlobalService.getStorageItem("watched_movies")) || [];
-            } catch (e){
-                watchedMovies = [];
+        service.watchedMovies = [];
+
+        service.getWatchedMoviesFromStorage = function () {
+            try {
+                service.watchedMovies = JSON.parse(localStorage.getItem("watched_movies")) || [];
+            } catch (e) {
                 console.warn("Invalid JSON string")
             }
-            return watchedMovies
+            return service.watchedMovies;
         };
 
-
-        service.movieIsWatched = function(id){
-            var watchedMovies = service.getWatchedMoviesFromStorage();
-            return !!~watchedMovies.indexOf(id)
+        service.isMovieWatched = function (movieId) {
+            return !!~service.watchedMovies.indexOf(movieId)
         };
 
-
-        service.markAsWatched = function(id){
-            var watchedMovies = service.getWatchedMoviesFromStorage();
-            var occurenceIndex = watchedMovies.indexOf(id);
-            if(~occurenceIndex)
-                watchedMovies.splice(occurenceIndex,1);
+        service.toggleWatched = function (id) {
+            var occurenceIndex = service.watchedMovies.indexOf(id);
+            if (~occurenceIndex)
+                service.watchedMovies.splice(occurenceIndex, 1);
             else
-                watchedMovies.push(+id);
-            GlobalService.setStorageItem("watched_movies", JSON.stringify(watchedMovies));
-            service.markWatchedMovies(); //for update movie data in the list
+                service.watchedMovies.push(+id);
+            localStorage.setItem("watched_movies", JSON.stringify(service.watchedMovies));
         };
 
 
-        service.markWatchedMovies = function(){
-            var watchedMovies = service.getWatchedMoviesFromStorage();
-            angular.forEach(service.data.movies, function(movie){
-                movie.watched = ~watchedMovies.indexOf(movie.id);
-            })
-        };
-
-
-        service.getMovies(function(){
-            service.markWatchedMovies();
+        service.getMovies(function () {
+            service.getWatchedMoviesFromStorage();
         });
 
     })();

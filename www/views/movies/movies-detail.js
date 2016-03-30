@@ -1,15 +1,14 @@
-app.controller('MoviesDetailCtrl', function ($scope, MoviesService, $stateParams, GlobalService) {
+app.controller('MoviesDetailCtrl', function ($scope, MoviesService, $stateParams) {
     if($stateParams){
-        $scope.movieId = +$stateParams.id
-        $scope.movie = MoviesService.getMovieById($scope.movieId);
+        var movieId = +$stateParams.id;
+        $scope.movie = MoviesService.getMovieById(movieId);
     }
 
-
-    $scope.markAsWatched = function(){
-        MoviesService.markAsWatched($scope.movieId);
-        $scope.movieWatched = MoviesService.movieIsWatched($scope.movieId); //for change text in button
+    $scope.toggleWatched = function(){
+        MoviesService.toggleWatched(movieId);
     };
 
-
-    $scope.movieWatched = MoviesService.movieIsWatched($scope.movieId);
+    $scope.isMovieWatched = function () {
+        return MoviesService.isMovieWatched(movieId);
+    };
 })

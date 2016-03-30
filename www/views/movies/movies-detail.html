@@ -1,6 +1,6 @@
 <ion-view title="{{movie.title}}" id="view-movies-detail">
     <ion-content>
-        <img src="http://image.tmdb.org/t/p/w500/{{movie.backdrop_path}}" alt=""/>
+        <img ng-src="http://image.tmdb.org/t/p/w500{{movie.backdrop_path}}" alt=""/>
         <ul class="list">
             <li class="item">
                 <strong>Release date:</strong>
@@ -14,10 +14,10 @@
                 <p>{{movie.overview}}</p>
             </li>
             <li class="item">
-                <button class="button button-block" ng-click="markAsWatched(movie.id)"
-                        ng-class="{'button-positive': !movieWatched, 'button-assertive': movieWatched}">
-                    <span ng-if="!movieWatched">Mark as watched</span>
-                    <span ng-if="movieWatched">Unmark as watched</span>
+                <button class="button button-block" ng-click="toggleWatched(movie.id)"
+                        ng-class="{'button-positive': !isMovieWatched(), 'button-assertive': isMovieWatched()}">
+                    <span ng-if="!isMovieWatched()">Mark as watched</span>
+                    <span ng-if="isMovieWatched()">Unmark as watched</span>
                 </button>
             </li>
         </ul>
